@@ -1470,6 +1470,286 @@
           font-size: 13px;
         }
       }
+
+      /* =====================================================
+         Responsive polish: phones (iOS / Android), tablets,
+         laptops, large and ultra-wide screens, foldables.
+         Appended last so the design itself is unchanged.
+         ===================================================== */
+      :root {
+        --nav: calc(60px + env(safe-area-inset-top, 0px));
+      }
+      html {
+        -moz-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        overflow-x: hidden;
+        overflow-x: clip;
+      }
+      body {
+        min-width: 0;
+        -webkit-touch-callout: none;
+      }
+      a,
+      button,
+      .btn {
+        touch-action: manipulation;
+      }
+      h1,
+      h2,
+      h3,
+      p {
+        overflow-wrap: break-word;
+      }
+      video,
+      canvas,
+      svg {
+        max-width: 100%;
+      }
+
+      /* nav: respect notch / status bar, never overflow */
+      .nav {
+        padding-top: env(safe-area-inset-top, 0px);
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+      }
+      .nav .wrap {
+        min-width: 0;
+      }
+      .logo {
+        flex: none;
+      }
+      .nav-r {
+        min-width: 0;
+        flex: 0 1 auto;
+      }
+
+      /* footer: keep content clear of home indicator + side notches */
+      .foot {
+        padding-left: 0;
+        padding-right: 0;
+      }
+      .foot nav .btn {
+        flex: none;
+      }
+      .copy p {
+        min-width: 0;
+      }
+
+      /* ---- touch devices: no sticky hover states, crisp tap feedback ---- */
+      @media (hover: none) {
+        .btn:hover {
+          background: var(--ink);
+          border-color: var(--ink);
+          transform: none;
+          box-shadow: none;
+        }
+        .btn.ghost:hover {
+          background: transparent;
+          border-color: #cfcfcf;
+        }
+        .btn.inv:hover {
+          background: var(--paper);
+          border-color: var(--paper);
+        }
+        .btn:active {
+          transform: scale(0.97);
+          transition-duration: 0.12s;
+        }
+        .frame:hover {
+          transform: none;
+          box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+        }
+        .f:hover {
+          border-color: var(--line);
+          box-shadow: none;
+        }
+        .f:hover .ic {
+          background: var(--wash);
+          border-color: var(--line);
+          color: inherit;
+        }
+        .f:hover .sw,
+        .f:hover .ex,
+        .f:hover .v-comp,
+        .js .f.show:hover {
+          transform: none;
+        }
+        .foot nav a:not(.btn):hover::after {
+          transform: scaleX(0);
+        }
+        .foot nav a:not(.btn):hover {
+          color: #cfcfcf;
+        }
+        .foot .btn:hover svg {
+          transform: none;
+        }
+        .top-btn:hover {
+          background: transparent;
+          color: var(--paper);
+          transform: none;
+        }
+        .top-btn:active {
+          background: var(--paper);
+          color: var(--ink);
+        }
+        .nav-link:hover {
+          color: var(--muted);
+        }
+      }
+
+      /* ---- small phones ---- */
+      @media (max-width: 400px) {
+        .hero .wrap {
+          gap: 32px;
+        }
+        .actions .btn {
+          width: 100%;
+        }
+        .v-ex {
+          gap: 10px;
+          padding-bottom: 26px;
+        }
+        .ex.reel {
+          --w: 46px;
+        }
+        .ex.post {
+          --w: 66px;
+        }
+        .ex.square {
+          --w: 76px;
+        }
+        .f {
+          border-radius: 20px;
+        }
+        .foot {
+          border-radius: 22px 22px 0 0;
+        }
+        .copy {
+          gap: 12px;
+        }
+      }
+      @media (max-width: 350px) {
+        .wrap {
+          padding-left: max(16px, env(safe-area-inset-left));
+          padding-right: max(16px, env(safe-area-inset-right));
+        }
+        .preview {
+          gap: 2%;
+        }
+        .frame.reel {
+          --x: -30px;
+        }
+        .frame.square {
+          --x: 30px;
+        }
+        .v-sliders span {
+          width: 80px;
+        }
+        .v-phone {
+          width: 62px;
+          height: 112px;
+        }
+        .viz {
+          gap: 16px;
+        }
+      }
+      /* foldables / very narrow cover screens */
+      @media (max-width: 300px) {
+        .nav-link {
+          display: none;
+        }
+        h1 {
+          font-size: 2rem;
+        }
+        .fine {
+          font-size: 13px;
+        }
+        .v-ex {
+          gap: 6px;
+        }
+        .ex.reel {
+          --w: 40px;
+        }
+        .ex.post {
+          --w: 58px;
+        }
+        .ex.square {
+          --w: 66px;
+        }
+        .foot nav {
+          gap: 4px 16px;
+        }
+      }
+
+      /* ---- large phones / small tablets ---- */
+      @media (min-width: 480px) and (max-width: 959px) {
+        .preview {
+          max-width: 480px;
+        }
+      }
+      @media (min-width: 640px) and (max-width: 959px) {
+        .wrap {
+          padding-left: max(28px, env(safe-area-inset-left));
+          padding-right: max(28px, env(safe-area-inset-right));
+        }
+        .preview {
+          max-width: 520px;
+        }
+      }
+
+      /* ---- phones in landscape: use the width, not the height ---- */
+      @media (max-height: 560px) and (orientation: landscape) and (min-width: 640px) {
+        .hero .wrap {
+          grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+          gap: 40px;
+        }
+        .hero-copy {
+          text-align: left;
+        }
+        .lede {
+          margin: 16px 0 0;
+        }
+        .actions {
+          justify-content: flex-start;
+          margin-top: 22px;
+        }
+        .preview {
+          order: 0;
+          justify-self: end;
+          max-width: 340px;
+        }
+        h1 {
+          font-size: clamp(2rem, 5.2vw, 3rem);
+        }
+        .hero {
+          padding: 24px 0 32px;
+        }
+        .features {
+          padding: 48px 0 56px;
+        }
+      }
+
+      /* ---- tall/narrow tablets & mid laptops ---- */
+      @media (min-width: 960px) and (max-width: 1100px) {
+        .hero .wrap {
+          gap: 44px;
+        }
+      }
+
+      /* ---- large & ultra-wide ---- */
+      @media (min-width: 2400px) {
+        html {
+          font-size: 112.5%;
+        }
+        .wrap {
+          max-width: 1680px;
+        }
+      }
+      @media (min-width: 3200px) {
+        html {
+          font-size: 137.5%;
+        }
+      }
     </style>
   </head>
   <body>

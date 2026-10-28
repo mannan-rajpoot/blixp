@@ -19,7 +19,7 @@
     <link rel="icon" type="image/png" sizes="any" href="/favicon.png" />
     <link rel="shortcut icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/logo.png" />
-    <meta name="theme-color" content="#111111" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -28,12 +28,13 @@
     />
     <style>
       :root {
-        --bg: #f4f2ee;
+        --bg: #f5f5f5;
         --panel: #ffffff;
-        --ink: #111111;
-        --muted: #6f6c66;
-        --line: #e7e4dd;
-        --field: #faf9f6;
+        --ink: #000000;
+        --muted: #5f5f5f;
+        --line: #e5e5e5;
+        --field: #fafafa;
+        --ease: cubic-bezier(0.22, 0.8, 0.24, 1);
         --stage: #141414;
         --danger: #b3261e;
         --top: 60px;
@@ -76,7 +77,9 @@
         justify-content: space-between;
         gap: 12px;
         padding: 0 20px;
-        background: var(--panel);
+        background: rgba(255, 255, 255, 0.92);
+        -webkit-backdrop-filter: saturate(1.6) blur(14px);
+        backdrop-filter: saturate(1.6) blur(14px);
         border-bottom: 1px solid var(--line);
         padding-left: max(20px, env(safe-area-inset-left));
         padding-right: max(20px, env(safe-area-inset-right));
@@ -84,13 +87,16 @@
       .brand {
         display: flex;
         align-items: center;
-        gap: 11px;
+        gap: 9px;
         min-width: 0;
+        text-decoration: none;
+        color: inherit;
       }
       .mark {
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
+        position: relative;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
         background: #000;
         color: #fff;
         display: grid;
@@ -98,10 +104,29 @@
         flex: none;
         overflow: hidden;
       }
-      .mark img {
+      .mark img,
+      .mark svg.fb {
+        position: absolute;
+        inset: 0;
         width: 100%;
         height: 100%;
         display: block;
+      }
+      .mark svg.fb {
+        padding: 6px;
+      }
+      .mark img {
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+        -webkit-user-drag: none;
+        user-select: none;
+      }
+      .mark.ok img {
+        opacity: 1;
+      }
+      .mark.ok svg.fb {
+        display: none;
       }
       .mark svg {
         width: 18px;
@@ -146,6 +171,10 @@
         display: block;
         border-radius: 8px;
         box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+        transform-origin: 0 0;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        will-change: transform;
       }
       #cv.empty {
         cursor: pointer;
@@ -257,15 +286,21 @@
         justify-content: center;
         gap: 8px;
         transition:
-          background 0.15s,
-          border-color 0.15s,
-          transform 0.1s;
+          background-color 0.2s ease,
+          border-color 0.2s ease,
+          transform 0.35s var(--ease),
+          box-shadow 0.35s var(--ease);
       }
       .btn:hover:not(:disabled) {
         background: #2b2b2b;
       }
+      .export-top:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+      }
       .btn:active:not(:disabled) {
         transform: scale(0.98);
+        box-shadow: none;
       }
       .btn:disabled {
         opacity: 0.4;
@@ -687,22 +722,860 @@
           transition: none !important;
         }
       }
+
+      /* =====================================================
+         Responsive + app-feel polish (added last, layered over
+         the original styles; all features/JS are untouched).
+         ===================================================== */
+      :root {
+        --top: calc(60px + env(safe-area-inset-top, 0px));
+        --sab: env(safe-area-inset-bottom, 0px);
+      }
+      html {
+        -webkit-tap-highlight-color: transparent;
+        text-size-adjust: 100%;
+        overscroll-behavior-y: none;
+      }
+      body {
+        overflow-x: hidden;
+        overflow-x: clip;
+        overscroll-behavior-y: none;
+        text-rendering: optimizeLegibility;
+      }
+      button,
+      .btn,
+      label,
+      .sw,
+      .av,
+      .drop,
+      input[type="range"],
+      input[type="checkbox"] {
+        touch-action: manipulation;
+      }
+      button,
+      .btn,
+      .seg,
+      .pbtn,
+      .sw {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+      }
+      .top {
+        padding-top: env(safe-area-inset-top, 0px);
+      }
+      .brand b,
+      .brand span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .export-top {
+        flex: none;
+        white-space: nowrap;
+      }
+      .view {
+        min-width: 0;
+        overflow: hidden;
+      }
+      .panel {
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: #cfcbc2 transparent;
+        -webkit-overflow-scrolling: touch;
+        padding-right: max(16px, env(safe-area-inset-right));
+      }
+      .card {
+        min-width: 0;
+      }
+      .btn,
+      .pbtn,
+      .seg button,
+      .sw,
+      .drop,
+      .av {
+        transition:
+          background-color 0.15s ease,
+          border-color 0.15s ease,
+          color 0.15s ease,
+          transform 0.12s ease,
+          box-shadow 0.15s ease;
+      }
+      .pbtn:active:not(:disabled) {
+        transform: scale(0.92);
+      }
+      .seg button:active {
+        transform: scale(0.97);
+      }
+      .modal {
+        padding-left: max(20px, env(safe-area-inset-left));
+        padding-right: max(20px, env(safe-area-inset-right));
+        padding-top: max(20px, env(safe-area-inset-top));
+        padding-bottom: max(20px, var(--sab));
+        overflow-y: auto;
+        overscroll-behavior: contain;
+      }
+      .modal .card {
+        max-height: 100%;
+        overflow-y: auto;
+      }
+      .toast {
+        bottom: calc(24px + var(--sab));
+        text-align: center;
+        width: max-content;
+      }
+      @keyframes sheet-up {
+        from {
+          transform: translateY(24px);
+          opacity: 0;
+        }
+        to {
+          transform: none;
+          opacity: 1;
+        }
+      }
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .modal:not([hidden]) {
+        animation: fade-in 0.2s ease;
+      }
+      .modal:not([hidden]) .card {
+        animation: sheet-up 0.28s cubic-bezier(0.22, 0.8, 0.24, 1);
+      }
+
+      /* ---- touch / coarse pointers: no sticky hover, bigger targets ---- */
+      @media (hover: none), (pointer: coarse) {
+        .btn:hover:not(:disabled) {
+          background: #111;
+        }
+        .btn.ghost:hover:not(:disabled) {
+          background: #fff;
+          border-color: var(--line);
+        }
+        .pbtn:hover:not(:disabled) {
+          background: #fff;
+        }
+        .drop:hover {
+          border-color: #c9c5bb;
+          background: var(--field);
+        }
+        .sw:hover {
+          border-color: var(--line);
+        }
+        .seg button:not([aria-pressed="true"]):hover {
+          color: var(--muted);
+        }
+        .btn {
+          min-height: 44px;
+        }
+        .btn.sm {
+          min-height: 40px;
+          padding: 8px 14px;
+        }
+        .pbtn {
+          width: 46px;
+          height: 46px;
+        }
+        .seg button {
+          min-height: 44px;
+          font-size: 13.5px;
+        }
+        .check {
+          min-height: 44px;
+          margin-top: 6px;
+        }
+        .check input {
+          width: 22px;
+          height: 22px;
+        }
+        input[type="range"] {
+          height: 36px;
+        }
+        #scrub {
+          height: 40px;
+        }
+        .av {
+          width: 60px;
+          height: 60px;
+        }
+        .drop {
+          min-height: 72px;
+        }
+        input[type="text"] {
+          min-height: 46px;
+        }
+      }
+      /* iOS zooms into any input under 16px; stop that on phones/tablets */
+      @media (max-width: 1024px) and (pointer: coarse) {
+        input[type="text"] {
+          font-size: 16px;
+        }
+      }
+
+      /* ---- phones & small tablets (portrait): app-style stacked layout ---- */
+      @media (max-width: 860px) {
+        .app {
+          min-height: 100vh;
+          min-height: 100dvh;
+        }
+        .stage {
+          height: clamp(300px, 54dvh, 640px);
+          border-radius: 0 0 22px 22px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+        }
+        .view {
+          padding: 12px 14px 8px;
+        }
+        .player {
+          gap: 10px;
+          padding: 2px max(14px, env(safe-area-inset-right)) 12px
+            max(14px, env(safe-area-inset-left));
+        }
+        .panel {
+          padding: 16px max(14px, env(safe-area-inset-right))
+            calc(40px + var(--sab)) max(14px, env(safe-area-inset-left));
+          gap: 12px;
+        }
+        .top {
+          padding-left: max(16px, env(safe-area-inset-left));
+          padding-right: max(16px, env(safe-area-inset-right));
+        }
+        /* give the preview more room while typing so the keyboard
+           never hides what you are editing */
+        .app:has(input[type="text"]:focus) .stage {
+          height: clamp(200px, 34dvh, 360px);
+        }
+      }
+
+      /* tablets in portrait: two-column cards instead of one long column */
+      @media (min-width: 600px) and (max-width: 860px) and (orientation: portrait) {
+        .stage {
+          height: clamp(360px, 50dvh, 680px);
+        }
+        .panel {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          align-items: start;
+          gap: 14px;
+          padding-top: 18px;
+        }
+        .panel > .card:last-child {
+          grid-column: 1 / -1;
+        }
+      }
+
+      /* ---- small phones ---- */
+      @media (max-width: 420px) {
+        .card {
+          padding: 14px;
+          border-radius: 15px;
+        }
+        .seg button {
+          padding: 9px 2px;
+          font-size: 12.5px;
+        }
+        .t {
+          min-width: 36px;
+          font-size: 12px;
+        }
+        .brand b {
+          font-size: 17px;
+        }
+        .export-top {
+          padding: 10px 14px;
+        }
+      }
+      @media (max-width: 350px) {
+        .brand {
+          gap: 8px;
+        }
+        .mark {
+          width: 30px;
+          height: 30px;
+        }
+        .export-top {
+          padding: 10px 11px;
+          font-size: 13px;
+          gap: 6px;
+        }
+        .player {
+          gap: 7px;
+        }
+        .t.end {
+          display: none;
+        }
+        .swatches {
+          grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+          gap: 7px;
+        }
+        .modal {
+          padding-left: 12px;
+          padding-right: 12px;
+        }
+      }
+      /* very narrow (foldable cover screens): icon-only export button */
+      @media (max-width: 300px) {
+        .export-top span {
+          display: none;
+        }
+        .export-top {
+          width: 44px;
+          padding: 0;
+        }
+      }
+
+      /* ---- modal becomes a bottom sheet on phones ---- */
+      @media (max-width: 560px) {
+        .modal {
+          place-items: end center;
+          padding: 0;
+        }
+        .modal .card {
+          width: 100%;
+          max-width: 560px;
+          border-radius: 22px 22px 0 0;
+          padding: 22px max(20px, env(safe-area-inset-right))
+            calc(22px + var(--sab)) max(20px, env(safe-area-inset-left));
+        }
+        .actions {
+          flex-direction: column-reverse;
+        }
+        .actions .btn {
+          min-height: 48px;
+        }
+        .toast {
+          bottom: calc(18px + var(--sab));
+        }
+      }
+
+      /* ---- phones in landscape: editor beside the controls ---- */
+      @media (max-height: 520px) and (orientation: landscape) {
+        :root {
+          --top: calc(52px + env(safe-area-inset-top, 0px));
+        }
+        .app {
+          display: grid;
+          grid-template-rows: var(--top) minmax(0, 1fr);
+          height: 100vh;
+          height: 100dvh;
+          min-height: 0;
+        }
+        .top {
+          position: static;
+        }
+        .work {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) clamp(290px, 40vw, 380px);
+          min-height: 0;
+        }
+        .stage {
+          position: static;
+          height: auto;
+          border-radius: 0;
+          box-shadow: none;
+          padding-left: env(safe-area-inset-left, 0px);
+        }
+        .view {
+          padding: 10px 14px 4px;
+        }
+        .player {
+          padding: 2px 14px 8px;
+        }
+        .panel {
+          overflow-y: auto;
+          border-left: 1px solid var(--line);
+          padding: 12px max(14px, env(safe-area-inset-right))
+            calc(24px + var(--sab)) 12px;
+          display: flex;
+        }
+        .panel > .card:last-child {
+          grid-column: auto;
+        }
+        .app:has(input[type="text"]:focus) .stage {
+          height: auto;
+        }
+        .brand span {
+          display: none;
+        }
+      }
+
+      /* ---- laptops / desktops ---- */
+      @media (min-width: 861px) {
+        .panel {
+          scroll-padding: 16px;
+        }
+        .btn:focus-visible,
+        .seg button:focus-visible {
+          outline-offset: 3px;
+        }
+      }
+
+      /* ---- large screens ---- */
+      @media (min-width: 1600px) {
+        :root {
+          --top: 66px;
+        }
+        .top {
+          padding-left: 28px;
+          padding-right: 28px;
+        }
+        .work {
+          grid-template-columns: minmax(0, 1fr) clamp(420px, 23vw, 520px);
+        }
+        .view {
+          padding: 32px;
+        }
+        .player {
+          padding: 8px 32px 28px;
+          gap: 16px;
+        }
+        .panel {
+          padding: 22px;
+          gap: 16px;
+        }
+        .card {
+          padding: 20px;
+          border-radius: 18px;
+        }
+        .card h2 {
+          font-size: 13.5px;
+          margin-bottom: 14px;
+        }
+        .lab,
+        .check {
+          font-size: 14.5px;
+        }
+        .btn {
+          font-size: 15px;
+        }
+        .btn.sm {
+          font-size: 13.5px;
+        }
+        .seg button {
+          font-size: 14px;
+          padding: 11px 8px;
+        }
+        input[type="text"] {
+          font-size: 15px;
+          padding: 13px 14px;
+        }
+        .note,
+        .err,
+        .drop small,
+        .file .meta {
+          font-size: 13.5px;
+        }
+        .drop b,
+        .file .fn {
+          font-size: 15px;
+        }
+        .t {
+          font-size: 13.5px;
+          min-width: 48px;
+        }
+      }
+      @media (min-width: 2200px) {
+        :root {
+          --top: 74px;
+        }
+        .work {
+          grid-template-columns: minmax(0, 1fr) clamp(500px, 21vw, 640px);
+        }
+        .brand b {
+          font-size: 21px;
+        }
+        .card h2 {
+          font-size: 14.5px;
+        }
+        .lab,
+        .check {
+          font-size: 16px;
+        }
+        .btn {
+          font-size: 16.5px;
+          padding: 13px 20px;
+        }
+        .seg button {
+          font-size: 15.5px;
+        }
+        input[type="text"] {
+          font-size: 16.5px;
+        }
+        .note,
+        .err,
+        .drop small,
+        .file .meta {
+          font-size: 15px;
+        }
+        .drop b,
+        .file .fn {
+          font-size: 16.5px;
+        }
+        .pbtn {
+          width: 52px;
+          height: 52px;
+        }
+        .t {
+          font-size: 15px;
+        }
+      }
+
+      /* ---- short desktop windows ---- */
+      @media (min-width: 861px) and (max-height: 640px) {
+        .view {
+          padding: 14px;
+        }
+        .player {
+          padding-bottom: 12px;
+        }
+        .panel {
+          padding: 12px;
+          gap: 10px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .modal:not([hidden]),
+        .modal:not([hidden]) .card {
+          animation: none;
+        }
+      }
+
+      /* =====================================================
+         Mobile drawer + laptop / large-screen refinements
+         ===================================================== */
+      .dock,
+      .drawer-head {
+        display: none;
+      }
+      .panel-body {
+        display: contents;
+      }
+
+      @media (max-width: 860px) and (min-height: 521px) {
+        :root {
+          --drawer-h: clamp(300px, 46dvh, 440px);
+          --dh: max(
+            220px,
+            min(
+              var(--drawer-h),
+              calc(100dvh - var(--top) - var(--kb, 0px) - 190px)
+            )
+          );
+        }
+        html,
+        body {
+          overflow: hidden;
+        }
+        .app {
+          display: flex;
+          flex-direction: column;
+          height: 100vh;
+          height: 100dvh;
+          min-height: 0;
+        }
+        .top {
+          position: relative;
+          flex: none;
+          height: var(--top);
+        }
+        .work {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          min-height: 0;
+          padding-bottom: 0;
+        }
+        body.drawer-open .work {
+          padding-bottom: calc(var(--dh) + var(--kb, 0px));
+        }
+        .stage,
+        .app:has(input[type="text"]:focus) .stage {
+          position: static;
+          flex: 1;
+          height: auto;
+          min-height: 0;
+          border-radius: 0;
+          box-shadow: none;
+        }
+        .view {
+          padding: 12px 14px 6px;
+        }
+        .dock {
+          display: flex;
+          padding: 4px max(14px, env(safe-area-inset-right))
+            calc(14px + var(--sab)) max(14px, env(safe-area-inset-left));
+        }
+        .dock .btn,
+        .dock .btn:hover:not(:disabled) {
+          width: 100%;
+          min-height: 50px;
+          font-size: 15px;
+          border-radius: 14px;
+          background: #fff;
+          color: #111;
+          border-color: #fff;
+        }
+        .dock .btn:active {
+          background: #e8e8e8;
+        }
+        body.drawer-open .dock {
+          display: none;
+        }
+        body.drawer-open .player {
+          padding-bottom: 12px;
+        }
+
+        .panel {
+          position: fixed;
+          left: 0;
+          right: 0;
+          top: auto;
+          bottom: var(--kb, 0px);
+          z-index: 25;
+          height: var(--dh);
+          padding: 0;
+          gap: 0;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          background: var(--bg);
+          border-left: 0;
+          border-radius: 22px 22px 0 0;
+          box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.28);
+          transform: translate3d(0, calc(100% + var(--kb, 0px) + 24px), 0);
+          visibility: hidden;
+          transition:
+            transform 0.42s cubic-bezier(0.32, 0.72, 0, 1),
+            visibility 0s linear 0.42s;
+          will-change: transform;
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+          contain: layout paint;
+        }
+        body.drawer-open .panel {
+          transform: translate3d(0, 0, 0);
+          visibility: visible;
+          transition:
+            transform 0.42s cubic-bezier(0.32, 0.72, 0, 1),
+            visibility 0s;
+        }
+        .drawer-head {
+          display: block;
+          flex: none;
+          background: var(--panel);
+          border-radius: 22px 22px 0 0;
+          border-bottom: 1px solid var(--line);
+          touch-action: none;
+        }
+        .grab {
+          display: block;
+          position: relative;
+          width: 100%;
+          height: 24px;
+          padding: 0;
+          border: 0;
+          background: transparent;
+          cursor: pointer;
+        }
+        .grab::before {
+          content: "";
+          position: absolute;
+          left: 50%;
+          top: 10px;
+          width: 40px;
+          height: 4px;
+          border-radius: 4px;
+          background: #d3cfc6;
+          transform: translateX(-50%);
+        }
+        .drawer-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 0 max(14px, env(safe-area-inset-right)) 12px
+            max(14px, env(safe-area-inset-left));
+        }
+        .drawer-row .seg {
+          flex: 1;
+          min-width: 0;
+        }
+        .drawer-close {
+          flex: none;
+          width: 44px;
+          height: 44px;
+          padding: 0;
+          border: 0;
+          border-radius: 50%;
+          background: var(--bg);
+          color: #111;
+          display: grid;
+          place-items: center;
+          cursor: pointer;
+          transition: transform 0.12s ease;
+        }
+        .drawer-close:active {
+          transform: scale(0.92);
+        }
+        .panel-body {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          flex: 1;
+          min-height: 0;
+          overflow-y: auto;
+          overscroll-behavior: contain;
+          -webkit-overflow-scrolling: touch;
+          padding: 14px max(14px, env(safe-area-inset-right))
+            calc(28px + var(--sab)) max(14px, env(safe-area-inset-left));
+        }
+        .panel-body > .card {
+          flex: none;
+        }
+        .panel[data-tab="video"] .card:not([data-tab="video"]),
+        .panel[data-tab="look"] .card:not([data-tab="look"]),
+        .panel[data-tab="text"] .card:not([data-tab="text"]),
+        .panel[data-tab="export"] .card:not([data-tab="export"]) {
+          display: none;
+        }
+      }
+      @media (max-width: 860px) and (min-height: 521px) and (prefers-reduced-motion: reduce) {
+        .work,
+        .panel,
+        body.drawer-open .panel {
+          transition: none !important;
+        }
+      }
+
+      /* ---- laptops & desktops ---- */
+      @media (min-width: 861px) and (max-width: 1599px) {
+        .work {
+          grid-template-columns: minmax(0, 1fr) clamp(332px, 27vw, 400px);
+        }
+      }
+      @media (min-width: 1100px) {
+        .player {
+          width: 100%;
+          max-width: 960px;
+          align-self: center;
+        }
+      }
+      @media (min-width: 861px) and (max-height: 820px) {
+        .panel {
+          padding: 14px;
+          gap: 10px;
+        }
+        .card {
+          padding: 14px;
+        }
+        .lab {
+          margin: 12px 0 7px;
+        }
+        .card h2 {
+          margin-bottom: 10px;
+        }
+      }
+
+      /* ---- 4K / ultra-wide ---- */
+      @media (min-width: 3000px) {
+        :root {
+          --top: 88px;
+        }
+        .work {
+          grid-template-columns: minmax(0, 1fr) clamp(680px, 19vw, 860px);
+        }
+        .brand b {
+          font-size: 26px;
+        }
+        .brand span {
+          font-size: 16px;
+        }
+        .mark {
+          width: 44px;
+          height: 44px;
+          border-radius: 13px;
+        }
+        .panel {
+          padding: 28px;
+          gap: 20px;
+        }
+        .card {
+          padding: 26px;
+          border-radius: 22px;
+        }
+        .card h2 {
+          font-size: 17px;
+        }
+        .lab,
+        .check {
+          font-size: 19px;
+        }
+        .btn {
+          font-size: 20px;
+          padding: 16px 24px;
+        }
+        .seg button {
+          font-size: 19px;
+          padding: 14px 10px;
+        }
+        input[type="text"] {
+          font-size: 20px;
+          padding: 16px 18px;
+        }
+        .note,
+        .err,
+        .drop small,
+        .file .meta {
+          font-size: 18px;
+        }
+        .drop b,
+        .file .fn {
+          font-size: 20px;
+        }
+        .pbtn {
+          width: 64px;
+          height: 64px;
+        }
+        .pbtn svg {
+          width: 24px;
+          height: 24px;
+        }
+        .t {
+          font-size: 18px;
+          min-width: 60px;
+        }
+        .player {
+          max-width: 1200px;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="app">
       <header class="top">
         <div class="brand">
-          <span class="mark">
+          <div class="mark" id="brandMark">
+            <svg class="fb" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M7 4h6.2c2.6 0 4.3 1.5 4.3 3.7 0 1.4-.7 2.5-1.9 3.1 1.6.5 2.6 1.8 2.6 3.5 0 2.5-1.9 4.2-4.8 4.2H7V4Zm3 2.7v3h2.8c1 0 1.6-.6 1.6-1.5s-.6-1.5-1.6-1.5H10Zm0 5.6v3.1h3.1c1.1 0 1.8-.6 1.8-1.6s-.7-1.5-1.8-1.5H10Z"
+              />
+            </svg>
             <img
+              id="brandLogo"
               src="/logo.png"
-              alt="Blixp"
-              width="34"
-              height="34"
+              alt=""
+              width="30"
+              height="30"
               decoding="async"
               fetchpriority="high"
+              draggable="false"
             />
-          </span>
+          </div>
           <b>Blixp</b><span>Your App. Your Showcase.</span>
         </div>
         <button type="button" class="btn export-top" id="exportBtn" disabled>
@@ -752,183 +1625,261 @@
             />
             <span class="t end" id="tEnd">0:00.0</span>
           </div>
+          <div class="dock">
+            <button
+              type="button"
+              class="btn"
+              id="dockBtn"
+              aria-expanded="false"
+              aria-controls="panel"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M4 7h10M18 7h2M4 17h2M10 17h10" />
+                <circle cx="16" cy="7" r="2" />
+                <circle cx="8" cy="17" r="2" />
+              </svg>
+              <span>Customize</span>
+            </button>
+          </div>
         </section>
 
-        <aside class="panel" id="panel">
-          <div class="card">
-            <h2>Recording</h2>
-            <div id="vidEmpty">
-              <label class="drop" id="drop" for="file" tabindex="0">
-                <span class="ic"
-                  ><svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M12 16V4M7 9l5-5 5 5M4 20h16" /></svg
-                ></span>
-                <span
-                  ><b>Add your recording</b
-                  ><small>Tap or drop an MP4 / MOV</small></span
-                >
-              </label>
-            </div>
-            <input
-              type="file"
-              id="file"
-              accept="video/*,.mp4,.mov,.m4v,.webm"
-              hidden
-            />
-            <div id="card" hidden>
-              <div class="file">
-                <span class="thumb"
-                  ><svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <rect x="3" y="5" width="18" height="14" rx="3" />
-                    <path d="M10 9.5l4 2.5-4 2.5z" fill="currentColor" /></svg
-                ></span>
-                <div class="info">
-                  <div class="fn" id="vName"></div>
-                  <div class="meta" id="vMeta"></div>
-                </div>
-                <button type="button" class="btn ghost sm" id="replace">
-                  Replace
+        <aside
+          class="panel"
+          id="panel"
+          data-tab="video"
+          aria-label="Editor controls"
+        >
+          <div class="drawer-head" id="drawerHead">
+            <button
+              type="button"
+              class="grab"
+              id="grab"
+              aria-label="Close controls"
+            ></button>
+            <div class="drawer-row">
+              <div
+                class="seg"
+                id="drawerTabs"
+                role="group"
+                aria-label="Control sections"
+              >
+                <button type="button" data-tab="video" aria-pressed="true">
+                  Video
+                </button>
+                <button type="button" data-tab="look" aria-pressed="false">
+                  Look
+                </button>
+                <button type="button" data-tab="text" aria-pressed="false">
+                  Text
+                </button>
+                <button type="button" data-tab="export" aria-pressed="false">
+                  Export
                 </button>
               </div>
-              <p class="note" id="trimNote" hidden>
-                Videos are limited to 30 seconds. Only the first 30 seconds will
-                be used.
-              </p>
-            </div>
-            <div class="err" id="err" role="alert" hidden></div>
-          </div>
-
-          <div class="card">
-            <h2>Look</h2>
-            <div class="lab">Background</div>
-            <div class="swatches" id="bgs"></div>
-
-            <div class="lab">Size <output id="sizeOut">100%</output></div>
-            <input
-              type="range"
-              id="size"
-              min="50"
-              max="100"
-              value="100"
-              aria-label="Screen size"
-            />
-
-            <div class="lab">
-              Corner roundness <output id="roundOut">60%</output>
-            </div>
-            <input
-              type="range"
-              id="round"
-              min="0"
-              max="100"
-              value="60"
-              aria-label="Corner roundness"
-            />
-
-            <label class="check"
-              ><input type="checkbox" id="shadow" checked />Soft shadow</label
-            >
-          </div>
-
-          <div class="card">
-            <h2>Title</h2>
-            <input
-              type="text"
-              id="title"
-              placeholder="Optional, e.g. Meet my new app"
-              maxlength="80"
-              autocomplete="off"
-              aria-label="Title"
-            />
-          </div>
-
-          <div class="card">
-            <h2>Profile</h2>
-            <div class="prof-row" id="profRow">
               <button
                 type="button"
-                class="av"
-                id="avBtn"
-                aria-label="Upload profile photo"
+                class="drawer-close"
+                id="drawerClose"
+                aria-label="Close controls"
               >
                 <svg
                   viewBox="0 0 24 24"
+                  width="20"
+                  height="20"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width="2"
+                  stroke-width="2.4"
                   stroke-linecap="round"
                   stroke-linejoin="round"
                 >
-                  <circle cx="12" cy="8" r="4" />
-                  <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
+                  <path d="M6 9l6 6 6-6" />
                 </svg>
               </button>
-              <div class="info">
-                <b id="avTitle">Upload profile photo</b>
-                <small>Tap or drop an image</small>
-              </div>
-              <button type="button" class="btn ghost sm" id="avRemove" hidden>
-                Remove
-              </button>
             </div>
-            <input type="file" id="avFile" accept="image/*" hidden />
-            <label class="lab" for="handle">Name / handle</label>
-            <input
-              type="text"
-              id="handle"
-              placeholder="e.g. your.name"
-              maxlength="40"
-              autocomplete="off"
-              aria-label="Name or handle"
-            />
-            <label class="check"
-              ><input type="checkbox" id="showProf" checked />Show in video
-              (bottom left)</label
-            >
           </div>
+          <div class="panel-body" id="panelBody">
+            <div class="card" data-tab="video">
+              <h2>Recording</h2>
+              <div id="vidEmpty">
+                <label class="drop" id="drop" for="file" tabindex="0">
+                  <span class="ic"
+                    ><svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M12 16V4M7 9l5-5 5 5M4 20h16" /></svg
+                  ></span>
+                  <span
+                    ><b>Add your recording</b
+                    ><small>Tap or drop an MP4 / MOV</small></span
+                  >
+                </label>
+              </div>
+              <input
+                type="file"
+                id="file"
+                accept="video/*,.mp4,.mov,.m4v,.webm"
+                hidden
+              />
+              <div id="card" hidden>
+                <div class="file">
+                  <span class="thumb"
+                    ><svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <rect x="3" y="5" width="18" height="14" rx="3" />
+                      <path d="M10 9.5l4 2.5-4 2.5z" fill="currentColor" /></svg
+                  ></span>
+                  <div class="info">
+                    <div class="fn" id="vName"></div>
+                    <div class="meta" id="vMeta"></div>
+                  </div>
+                  <button type="button" class="btn ghost sm" id="replace">
+                    Replace
+                  </button>
+                </div>
+                <p class="note" id="trimNote" hidden>
+                  Videos are limited to 30 seconds. Only the first 30 seconds
+                  will be used.
+                </p>
+              </div>
+              <div class="err" id="err" role="alert" hidden></div>
+            </div>
 
-          <div class="card">
-            <h2>Export</h2>
-            <div class="lab">Shape</div>
-            <div class="seg" id="fmtSeg">
-              <button type="button" data-f="reel" aria-pressed="true">
-                Reel 9:16
-              </button>
-              <button type="button" data-f="post" aria-pressed="false">
-                Post 4:5
-              </button>
-              <button type="button" data-f="square" aria-pressed="false">
-                Square
-              </button>
+            <div class="card" data-tab="look">
+              <h2>Look</h2>
+              <div class="lab">Background</div>
+              <div class="swatches" id="bgs"></div>
+
+              <div class="lab">Size <output id="sizeOut">100%</output></div>
+              <input
+                type="range"
+                id="size"
+                min="50"
+                max="100"
+                value="100"
+                aria-label="Screen size"
+              />
+
+              <div class="lab">
+                Corner roundness <output id="roundOut">60%</output>
+              </div>
+              <input
+                type="range"
+                id="round"
+                min="0"
+                max="100"
+                value="60"
+                aria-label="Corner roundness"
+              />
+
+              <label class="check"
+                ><input type="checkbox" id="shadow" checked />Soft shadow</label
+              >
             </div>
-            <div class="lab">Smoothness</div>
-            <div class="seg" id="fpsSeg">
-              <button type="button" data-fps="30" aria-pressed="false">
-                30 fps
-              </button>
-              <button type="button" data-fps="60" aria-pressed="true">
-                60 fps
-              </button>
+
+            <div class="card" data-tab="text">
+              <h2>Title</h2>
+              <input
+                type="text"
+                id="title"
+                placeholder="Optional, e.g. Meet my new app"
+                maxlength="80"
+                autocomplete="off"
+                aria-label="Title"
+              />
             </div>
-            <p class="note" id="exportNote">
-              Full HD, 1080 px wide, up to 30 seconds. Every frame is captured
-              exactly, so the video is perfectly smooth. Exporting takes a
-              little longer on purpose.
-            </p>
+
+            <div class="card" data-tab="text">
+              <h2>Profile</h2>
+              <div class="prof-row" id="profRow">
+                <button
+                  type="button"
+                  class="av"
+                  id="avBtn"
+                  aria-label="Upload profile photo"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
+                  </svg>
+                </button>
+                <div class="info">
+                  <b id="avTitle">Upload profile photo</b>
+                  <small>Tap or drop an image</small>
+                </div>
+                <button type="button" class="btn ghost sm" id="avRemove" hidden>
+                  Remove
+                </button>
+              </div>
+              <input type="file" id="avFile" accept="image/*" hidden />
+              <label class="lab" for="handle">Name / handle</label>
+              <input
+                type="text"
+                id="handle"
+                placeholder="e.g. your.name"
+                maxlength="40"
+                autocomplete="off"
+                aria-label="Name or handle"
+              />
+              <label class="check"
+                ><input type="checkbox" id="showProf" checked />Show in video
+                (bottom left)</label
+              >
+            </div>
+
+            <div class="card" data-tab="export">
+              <h2>Export</h2>
+              <div class="lab">Shape</div>
+              <div class="seg" id="fmtSeg">
+                <button type="button" data-f="reel" aria-pressed="true">
+                  Reel 9:16
+                </button>
+                <button type="button" data-f="post" aria-pressed="false">
+                  Post 4:5
+                </button>
+                <button type="button" data-f="square" aria-pressed="false">
+                  Square
+                </button>
+              </div>
+              <div class="lab">Smoothness</div>
+              <div class="seg" id="fpsSeg">
+                <button type="button" data-fps="30" aria-pressed="false">
+                  30 fps
+                </button>
+                <button type="button" data-fps="60" aria-pressed="true">
+                  60 fps
+                </button>
+              </div>
+              <p class="note" id="exportNote">
+                Full HD, 1080 px wide, up to 30 seconds. Every frame is captured
+                exactly, so the video is perfectly smooth. Exporting takes a
+                little longer on purpose.
+              </p>
+            </div>
           </div>
         </aside>
       </div>
@@ -3672,7 +4623,14 @@ If you want to offset all timestamps of a track such that the first one is zero,
       const bgOf = () =>
         S.bg === "custom" ? { a: S.custom, b: S.custom } : BGS[S.bg];
 
-      function compose(ctx, W, H) {
+      /* part: "all" (default, used by export) | "back" (bg, title, shadow)
+         | "front" (outline + profile). The live preview caches back/front
+         and only redraws the video frame each tick. Returns the geometry. */
+      function compose(ctx, W, H, part) {
+        part = part || "all";
+        const doBack = part !== "front",
+          doMid = part === "all",
+          doFront = part !== "back";
         const k = W / CW,
           ch = H / k;
         const bg = bgOf();
@@ -3680,14 +4638,16 @@ If you want to offset all timestamps of a track such that the first one is zero,
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = "high";
-        if (bg.a === bg.b) ctx.fillStyle = bg.a;
-        else {
-          const g = ctx.createLinearGradient(W * 0.25, 0, W * 0.75, H);
-          g.addColorStop(0, bg.a);
-          g.addColorStop(1, bg.b);
-          ctx.fillStyle = g;
+        if (doBack) {
+          if (bg.a === bg.b) ctx.fillStyle = bg.a;
+          else {
+            const g = ctx.createLinearGradient(W * 0.25, 0, W * 0.75, H);
+            g.addColorStop(0, bg.a);
+            g.addColorStop(1, bg.b);
+            ctx.fillStyle = g;
+          }
+          ctx.fillRect(0, 0, W, H);
         }
-        ctx.fillRect(0, 0, W, H);
         ctx.scale(k, k);
         const dark = lum(bg.a) + lum(bg.b) < 1;
 
@@ -3712,9 +4672,10 @@ If you want to offset all timestamps of a track such that the first one is zero,
           ctx.textAlign = "center";
           ctx.textBaseline = "top";
           const y0 = ch < 1200 ? 70 : 110;
-          lines.forEach((l, i) =>
-            ctx.fillText(l, CW / 2, y0 + i * size * 1.14),
-          );
+          if (doBack)
+            lines.forEach((l, i) =>
+              ctx.fillText(l, CW / 2, y0 + i * size * 1.14),
+            );
           top = y0 + lines.length * size * 1.14 + 44;
         }
 
@@ -3728,7 +4689,8 @@ If you want to offset all timestamps of a track such that the first one is zero,
           y = top + (availH - sh) / 2;
         const r = (S.round / 100) * 0.16 * Math.min(sw, sh);
 
-        if (S.shadow) {
+        const geo = { k, x, y, sw, sh, r, has };
+        if (S.shadow && doBack) {
           ctx.save();
           ctx.shadowColor = dark ? "rgba(0,0,0,0.6)" : "rgba(20,20,30,0.30)";
           ctx.shadowBlur = 70 * k;
@@ -3738,18 +4700,24 @@ If you want to offset all timestamps of a track such that the first one is zero,
           ctx.fill();
           ctx.restore();
         }
-        ctx.save();
-        rr(ctx, x, y, sw, sh, r);
-        ctx.clip();
-        if (has) {
-          ctx.fillStyle = "#000";
-          ctx.fillRect(x, y, sw, sh);
-          ctx.drawImage(video, x - 0.5, y - 0.5, sw + 1, sh + 1);
-        } else {
-          ctx.fillStyle = dark ? "#262626" : "rgba(0,0,0,0.06)";
-          ctx.fillRect(x, y, sw, sh);
+        if (doMid) {
+          ctx.save();
+          rr(ctx, x, y, sw, sh, r);
+          ctx.clip();
+          if (has) {
+            ctx.fillStyle = "#000";
+            ctx.fillRect(x, y, sw, sh);
+            ctx.drawImage(video, x - 0.5, y - 0.5, sw + 1, sh + 1);
+          } else {
+            ctx.fillStyle = dark ? "#262626" : "#ececec";
+            ctx.fillRect(x, y, sw, sh);
+          }
+          ctx.restore();
         }
-        ctx.restore();
+        if (!doFront) {
+          ctx.restore();
+          return geo;
+        }
         if (has) {
           ctx.strokeStyle = dark
             ? "rgba(255,255,255,0.16)"
@@ -3782,6 +4750,66 @@ If you want to offset all timestamps of a track such that the first one is zero,
         }
         if (profileOn()) drawProfile(ctx, ch, dark);
         ctx.restore();
+        return geo;
+      }
+
+      /* ---- live preview renderer: static layers cached, only video redrawn ---- */
+      const PV = { key: "", back: null, front: null, geo: null, av: null };
+      function previewKey(W, H) {
+        const f =
+          document.fonts && document.fonts.check
+            ? document.fonts.check('800 40px "Plus Jakarta Sans"')
+            : 1;
+        return [
+          W,
+          H,
+          S.bg,
+          S.custom,
+          S.title,
+          S.size,
+          S.round,
+          S.shadow,
+          S.handle,
+          S.showProfile,
+          S.format,
+          f,
+          ready() ? video.videoWidth + "x" + video.videoHeight : "-",
+        ].join("|");
+      }
+      function composePreview(ctx, W, H) {
+        if (!ready()) {
+          PV.key = "";
+          compose(ctx, W, H);
+          return;
+        }
+        const key = previewKey(W, H);
+        if (key !== PV.key || PV.av !== avatarImg) {
+          if (!PV.back) {
+            PV.back = document.createElement("canvas");
+            PV.front = document.createElement("canvas");
+          }
+          PV.back.width = PV.front.width = W;
+          PV.back.height = PV.front.height = H;
+          compose(PV.back.getContext("2d"), W, H, "back");
+          PV.geo = compose(PV.front.getContext("2d"), W, H, "front");
+          PV.key = key;
+          PV.av = avatarImg;
+        }
+        const g = PV.geo,
+          k = g.k;
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.drawImage(PV.back, 0, 0);
+        ctx.save();
+        ctx.scale(k, k);
+        rr(ctx, g.x, g.y, g.sw, g.sh, g.r);
+        ctx.clip();
+        ctx.fillStyle = "#000";
+        ctx.fillRect(g.x, g.y, g.sw, g.sh);
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "medium";
+        ctx.drawImage(video, g.x - 0.5, g.y - 0.5, g.sw + 1, g.sh + 1);
+        ctx.restore();
+        ctx.drawImage(PV.front, 0, 0);
       }
 
       /* profile footer: avatar + divider + name, bottom left */
@@ -3835,7 +4863,7 @@ If you want to offset all timestamps of a track such that the first one is zero,
 
       /* ================= preview canvas ================= */
       const cv = $("#cv"),
-        pctx = cv.getContext("2d");
+        pctx = cv.getContext("2d", { alpha: false });
       function sizeStage() {
         const v = $("#view"),
           cs = getComputedStyle(v);
@@ -3851,12 +4879,56 @@ If you want to offset all timestamps of a track such that the first one is zero,
         const cssH = Math.max(120, Math.min(h, w * ratio)),
           cssW = cssH / ratio;
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const pw = Math.round(cssW * dpr),
+          ph = Math.round(cssH * dpr);
+        if (
+          cv.width === pw &&
+          cv.height === ph &&
+          cv.style.width === cssW + "px" &&
+          cv.style.height === cssH + "px"
+        )
+          return;
+        const before = cv.width ? cv.getBoundingClientRect() : null;
         cv.style.width = cssW + "px";
         cv.style.height = cssH + "px";
-        cv.width = Math.round(cssW * dpr);
-        cv.height = Math.round(cssH * dpr);
+        cv.width = pw;
+        cv.height = ph;
+        // resizing clears the canvas: repaint right now so no blank frame shows
+        try {
+          if (!exp.active) composePreview(pctx, cv.width, cv.height);
+        } catch (_) {}
         markDirty();
+        // iOS-style glide: animate from the old box to the new one
+        if (
+          before &&
+          before.width > 0 &&
+          performance.now() < flipUntil &&
+          !reduceMotion.matches
+        ) {
+          const after = cv.getBoundingClientRect();
+          const sx = before.width / after.width,
+            sy = before.height / after.height;
+          const dx = before.left - after.left,
+            dy = before.top - after.top;
+          if (
+            Math.abs(sx - 1) + Math.abs(sy - 1) + Math.abs(dx) + Math.abs(dy) >
+            0.01
+          ) {
+            cv.getAnimations().forEach((a) => a.cancel());
+            cv.animate(
+              [
+                { transform: `translate(${dx}px,${dy}px) scale(${sx},${sy})` },
+                { transform: "none" },
+              ],
+              { duration: 420, easing: "cubic-bezier(0.32,0.72,0,1)" },
+            );
+          }
+        }
       }
+      let flipUntil = 0; // set when the drawer opens/closes so only that resize glides
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      );
       new ResizeObserver(sizeStage).observe($("#view"));
 
       /* ================= player ================= */
@@ -4629,7 +5701,31 @@ If you want to offset all timestamps of a track such that the first one is zero,
           modalState("closed");
       });
 
+      /* ================= logo loader (tries several paths, then falls back) ================= */
+      (() => {
+        const mark = $("#brandMark"),
+          img = $("#brandLogo");
+        if (!img) return;
+        const tries = [
+          "/logo.png",
+          "logo.png",
+          "./logo.png",
+          "../logo.png",
+          "/favicon.png",
+        ];
+        let i = 0;
+        const ok = () => img.naturalWidth > 0 && mark.classList.add("ok");
+        img.addEventListener("load", ok);
+        img.addEventListener("error", () => {
+          i++;
+          if (i < tries.length) img.src = tries[i];
+        });
+        if (img.complete)
+          img.naturalWidth > 0 ? ok() : img.dispatchEvent(new Event("error"));
+      })();
+
       /* ================= main loop ================= */
+      let lastDrawn = -1;
       function tick() {
         if (
           !exp.active &&
@@ -4638,10 +5734,14 @@ If you want to offset all timestamps of a track such that the first one is zero,
           video.currentTime >= MAX_SECONDS
         )
           video.currentTime = 0; // preview loops at 30 s
-        if (!exp.active && (dirty || playing())) {
-          dirty = false;
-          compose(pctx, cv.width, cv.height);
-          syncTime();
+        if (!exp.active) {
+          const t = video.currentTime;
+          if (dirty || (playing() && t !== lastDrawn)) {
+            dirty = false;
+            lastDrawn = t;
+            composePreview(pctx, cv.width, cv.height);
+            syncTime();
+          }
         }
         requestAnimationFrame(tick);
       }
@@ -4653,6 +5753,109 @@ If you want to offset all timestamps of a track such that the first one is zero,
           .load('800 40px "Plus Jakarta Sans"')
           .then(markDirty)
           .catch(() => {});
+      /* ================= mobile drawer ================= */
+      (() => {
+        const panel = $("#panel"),
+          dockBtn = $("#dockBtn"),
+          head = $("#drawerHead"),
+          body = document.body;
+        const mq = window.matchMedia(
+          "(max-width: 860px) and (min-height: 521px)",
+        );
+        const isOpen = () => body.classList.contains("drawer-open");
+        function setOpen(o) {
+          flipUntil = performance.now() + 700;
+          body.classList.toggle("drawer-open", o);
+          dockBtn.setAttribute("aria-expanded", String(o));
+          if (o) $("#panelBody").scrollTop = 0;
+          markDirty();
+        }
+        dockBtn.addEventListener("click", () => setOpen(!isOpen()));
+        $("#grab").addEventListener("click", () => setOpen(false));
+        $("#drawerClose").addEventListener("click", () => setOpen(false));
+
+        const tabs = [...document.querySelectorAll("#drawerTabs button")];
+        tabs.forEach((b) =>
+          b.addEventListener("click", () => {
+            panel.dataset.tab = b.dataset.tab;
+            tabs.forEach((x) => x.setAttribute("aria-pressed", x === b));
+            $("#panelBody").scrollTop = 0;
+          }),
+        );
+
+        // swipe the header down to close (follows the finger, flick to dismiss)
+        let sy = null,
+          dy = 0,
+          lastY = 0,
+          lastT = 0,
+          vel = 0,
+          raf = 0;
+        const applyDrag = () => {
+          raf = 0;
+          panel.style.transform = "translate3d(0," + dy + "px,0)";
+        };
+        head.addEventListener(
+          "touchstart",
+          (e) => {
+            sy = lastY = e.touches[0].clientY;
+            lastT = performance.now();
+            dy = vel = 0;
+            panel.style.transition = "none";
+          },
+          { passive: true },
+        );
+        head.addEventListener(
+          "touchmove",
+          (e) => {
+            if (sy === null) return;
+            const y = e.touches[0].clientY,
+              t = performance.now();
+            dy = Math.max(0, y - sy);
+            if (t > lastT) vel = (y - lastY) / (t - lastT);
+            lastY = y;
+            lastT = t;
+            if (!raf) raf = requestAnimationFrame(applyDrag);
+          },
+          { passive: true },
+        );
+        const endDrag = () => {
+          if (sy === null) return;
+          if (raf) (cancelAnimationFrame(raf), (raf = 0));
+          const close = dy > 90 || vel > 0.5;
+          panel.style.transition = "";
+          panel.style.transform = "";
+          if (close) setOpen(false);
+          sy = null;
+        };
+        head.addEventListener("touchend", endDrag);
+        head.addEventListener("touchcancel", endDrag);
+
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && isOpen() && modal.hidden) setOpen(false);
+        });
+        const onMq = (e) => {
+          if (!e.matches) setOpen(false);
+        };
+        mq.addEventListener
+          ? mq.addEventListener("change", onMq)
+          : mq.addListener(onMq);
+
+        // keep the drawer above the on-screen keyboard
+        if (window.visualViewport) {
+          const vv = window.visualViewport;
+          const f = () => {
+            const kb = mq.matches
+              ? Math.max(0, window.innerHeight - vv.height - vv.offsetTop)
+              : 0;
+            document.documentElement.style.setProperty(
+              "--kb",
+              (kb > 80 ? Math.round(kb) : 0) + "px",
+            );
+          };
+          vv.addEventListener("resize", f);
+          vv.addEventListener("scroll", f);
+        }
+      })();
     </script>
   </body>
 </html>
