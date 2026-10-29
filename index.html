@@ -549,6 +549,138 @@
         background: rgba(0, 0, 0, 0.16);
       }
 
+      /* browsers without container query units (iOS 15 and older):
+         sizes come from --cw / --ch, set by a tiny script */
+      @supports not (width: 1cqw) {
+        .slot {
+          position: relative;
+        }
+        .screen {
+          --sh: min(var(--ch, 0px), calc(var(--cw, 0px) * 1.5289));
+          --sw: calc(var(--sh) * 0.5625);
+          height: var(--sh);
+          width: var(--sw);
+        }
+        .in {
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          display: flex;
+          flex-direction: column;
+          padding-top: calc(var(--cw) * 0.065);
+        }
+        .ttl {
+          margin: 0;
+          padding: 0 calc(var(--cw) * 0.08) calc(var(--cw) * 0.04);
+          text-align: center;
+          color: #111;
+          font-weight: 800;
+          font-size: calc(var(--cw) * 0.08);
+          line-height: 1.14;
+          letter-spacing: -0.02em;
+        }
+        .scr {
+          width: 100%;
+          height: 100%;
+          position: relative;
+          overflow: hidden;
+          background: #fff;
+          border-radius: calc(var(--sw) * 0.096);
+          box-shadow: 0 calc(var(--sw) * 0.04) calc(var(--sw) * 0.11)
+            rgba(20, 20, 30, 0.28);
+        }
+        .s-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: calc(var(--sw) * 0.09) calc(var(--sw) * 0.08)
+            calc(var(--sw) * 0.06);
+        }
+        .s-head i:first-child {
+          width: calc(var(--sw) * 0.32);
+          height: calc(var(--sw) * 0.06);
+          background: #111;
+        }
+        .s-head i:last-child {
+          width: calc(var(--sw) * 0.1);
+          height: calc(var(--sw) * 0.1);
+        }
+        .s-hero {
+          margin: 0 calc(var(--sw) * 0.08) calc(var(--sw) * 0.07);
+          height: calc(var(--sw) * 0.36);
+          border-radius: calc(var(--sw) * 0.06) !important;
+          background: linear-gradient(135deg, #111, #4a4a4a) !important;
+        }
+        .s-row {
+          display: flex;
+          align-items: center;
+          gap: calc(var(--sw) * 0.05);
+          padding: 0 calc(var(--sw) * 0.08);
+          margin-bottom: calc(var(--sw) * 0.06);
+        }
+        .s-row > i:first-child {
+          width: calc(var(--sw) * 0.12);
+          height: calc(var(--sw) * 0.12);
+          flex: none;
+        }
+        .s-row div {
+          flex: 1;
+          display: grid;
+          gap: calc(var(--sw) * 0.026);
+        }
+        .s-row div i {
+          height: calc(var(--sw) * 0.036);
+        }
+        .s-tabs {
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: calc(var(--sw) * 0.15);
+          display: flex;
+          align-items: center;
+          justify-content: space-around;
+          background: #fff;
+          border-top: 1px solid #efefef;
+        }
+        .s-tabs i {
+          width: calc(var(--sw) * 0.05);
+          height: calc(var(--sw) * 0.05);
+        }
+        .prof {
+          display: flex;
+          align-items: center;
+          gap: calc(var(--cw) * 0.04);
+          padding: calc(var(--cw) * 0.035) 0 calc(var(--cw) * 0.055)
+            calc(var(--cw) * 0.07);
+          color: #111;
+          font-weight: 700;
+          font-size: calc(var(--cw) * 0.05);
+          letter-spacing: -0.01em;
+          line-height: 1;
+        }
+        .av {
+          width: calc(var(--cw) * 0.09);
+          height: calc(var(--cw) * 0.09);
+          flex: none;
+          border-radius: 50%;
+          background: #e3dfd6;
+          display: grid;
+          place-items: center;
+          font-style: normal;
+          font-weight: 800;
+          font-size: calc(var(--cw) * 0.042);
+          box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+        }
+        .rule {
+          width: 1px;
+          height: calc(var(--cw) * 0.06);
+          background: rgba(0, 0, 0, 0.16);
+        }
+      }
+
       /* ---------- features ---------- */
       .features {
         padding: 72px 0 96px;
@@ -1798,7 +1930,11 @@
         font-weight: 800;
         font-size: clamp(44px, 12vw, 76px);
         line-height: 1;
-        animation: brandOut 0.8s cubic-bezier(0.64, 0, 0.78, 0) 3.2s forwards;
+        --nw: 2.6em;
+        translate: calc(var(--nw) / 2) 0;
+        animation:
+          brandShift 1.15s cubic-bezier(0.65, 0, 0.15, 1) 1.45s forwards,
+          brandOut 0.8s cubic-bezier(0.64, 0, 0.78, 0) 3.2s forwards;
         will-change: transform, opacity;
       }
       .splash-logo {
@@ -1819,16 +1955,16 @@
       /* grid 0fr -> 1fr fits the name exactly, so the logo glides
          to its final position with no jump at the end */
       .splash-name-clip {
-        display: grid;
-        grid-template-columns: 0fr;
-        animation: splashClip 1.15s cubic-bezier(0.65, 0, 0.15, 1) 1.45s
-          forwards;
+        display: block;
       }
       .splash-mask {
-        min-width: 0;
+        display: block;
         overflow: hidden;
-        overflow: clip;
         padding: 0.1em 0.04em 0.2em 0;
+        -webkit-clip-path: inset(0 100% 0 0);
+        clip-path: inset(0 100% 0 0);
+        animation: splashClip 1.15s cubic-bezier(0.65, 0, 0.15, 1) 1.45s
+          forwards;
       }
       .splash-name {
         display: block;
@@ -1853,7 +1989,13 @@
       }
       @keyframes splashClip {
         to {
-          grid-template-columns: 1fr;
+          -webkit-clip-path: inset(0 0 0 0);
+          clip-path: inset(0 0 0 0);
+        }
+      }
+      @keyframes brandShift {
+        to {
+          translate: 0 0;
         }
       }
       @keyframes splashName {
@@ -1943,8 +2085,13 @@
           transform: none;
           filter: none;
         }
-        .splash-name-clip {
-          grid-template-columns: 1fr;
+        .splash-brand {
+          translate: none;
+        }
+        .splash-mask {
+          animation: none;
+          -webkit-clip-path: none;
+          clip-path: none;
         }
         @keyframes splashFade {
           to {
@@ -2388,6 +2535,36 @@
 
     <script>
       (function () {
+        if (window.CSS && CSS.supports && CSS.supports("width", "1cqw")) return;
+        var frames = document.querySelectorAll(".frame");
+        if (!frames.length) return;
+        function size() {
+          var i, f, slot;
+          for (i = 0; i < frames.length; i++) {
+            f = frames[i];
+            f.style.setProperty("--cw", f.clientWidth + "px");
+          }
+          for (i = 0; i < frames.length; i++) {
+            f = frames[i];
+            slot = f.querySelector(".slot");
+            if (slot) f.style.setProperty("--ch", slot.clientHeight + "px");
+          }
+        }
+        size();
+        window.addEventListener("resize", size);
+        window.addEventListener("orientationchange", size);
+        window.addEventListener("load", size);
+        if (document.fonts && document.fonts.ready)
+          document.fonts.ready.then(size);
+        if (window.ResizeObserver) {
+          var ro = new ResizeObserver(size);
+          ro.observe(frames[0].parentNode);
+        }
+      })();
+    </script>
+
+    <script>
+      (function () {
         var s = document.getElementById("splash");
         var root = document.documentElement;
         if (!s) {
@@ -2397,6 +2574,18 @@
         var reduce = window.matchMedia(
           "(prefers-reduced-motion: reduce)",
         ).matches;
+        /* measure the name so the logo starts exactly centred */
+        var brand = s.querySelector(".splash-brand");
+        var clip = s.querySelector(".splash-name-clip");
+        function measure() {
+          if (brand && clip && clip.offsetWidth)
+            brand.style.setProperty("--nw", clip.offsetWidth + "px");
+        }
+        measure();
+        if (document.fonts && document.fonts.ready)
+          document.fonts.ready.then(function () {
+            if (!root.classList.contains("intro-go")) measure();
+          });
         /* page animations begin as the curtain lifts */
         setTimeout(
           function () {
