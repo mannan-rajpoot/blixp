@@ -17,7 +17,7 @@
     />
     <link rel="canonical" href="https://blixp.vercel.app/" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#000000" />
 
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -2027,43 +2027,6 @@
       html.splash-lock body {
         overflow: hidden;
       }
-      /* iOS Safari: no animated blur filters (they stutter), GPU-friendly layers */
-      @supports (-webkit-touch-callout: none) {
-        @keyframes enter {
-          from {
-            opacity: 0;
-            transform: translate3d(var(--x, 0), var(--y, 26px), 0) scale(0.96);
-          }
-          to {
-            opacity: 1;
-            transform: translate3d(0, 0, 0);
-          }
-        }
-        @keyframes splashLogo {
-          from {
-            opacity: 0;
-            transform: scale(0.55) translateZ(0);
-          }
-          to {
-            opacity: 1;
-            transform: none;
-          }
-        }
-        .splash {
-          -webkit-transform: translateZ(0);
-          transform: translateZ(0);
-          -webkit-backface-visibility: hidden;
-          backface-visibility: hidden;
-        }
-        .splash-logo {
-          filter: none;
-          will-change: transform, opacity;
-        }
-        .splash-name {
-          -webkit-backface-visibility: hidden;
-          backface-visibility: hidden;
-        }
-      }
       /* hold the home-page entrance until the curtain starts lifting */
       html.splash-on:not(.intro-go) .nav,
       html.splash-on:not(.intro-go) .hero,
@@ -2567,8 +2530,13 @@
       (function () {
         var s = document.getElementById("splash");
         var root = document.documentElement;
+        function themeWhite() {
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute("content", "#ffffff");
+        }
         if (!s) {
           root.classList.remove("splash-lock", "splash-on");
+          themeWhite();
           return;
         }
         var reduce = window.matchMedia(
@@ -2589,6 +2557,7 @@
         /* page animations begin as the curtain lifts */
         setTimeout(
           function () {
+            themeWhite();
             root.classList.add("intro-go");
           },
           reduce ? 0 : 3550,
