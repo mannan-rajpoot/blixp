@@ -364,6 +364,10 @@
         border-radius: 8px;
         overflow: hidden;
         container-type: inline-size;
+        position: relative;
+        isolation: isolate;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
         background: linear-gradient(160deg, var(--a), var(--b));
         box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
         animation: enter 1.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
@@ -406,7 +410,11 @@
           0 22px 40px rgba(0, 0, 0, 0.1);
       }
       .in {
-        height: 100%;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
         display: flex;
         flex-direction: column;
         padding-top: 6.5cqw;
@@ -1876,6 +1884,43 @@
       html.splash-lock,
       html.splash-lock body {
         overflow: hidden;
+      }
+      /* iOS Safari: no animated blur filters (they stutter), GPU-friendly layers */
+      @supports (-webkit-touch-callout: none) {
+        @keyframes enter {
+          from {
+            opacity: 0;
+            transform: translate3d(var(--x, 0), var(--y, 26px), 0) scale(0.96);
+          }
+          to {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+          }
+        }
+        @keyframes splashLogo {
+          from {
+            opacity: 0;
+            transform: scale(0.55) translateZ(0);
+          }
+          to {
+            opacity: 1;
+            transform: none;
+          }
+        }
+        .splash {
+          -webkit-transform: translateZ(0);
+          transform: translateZ(0);
+          -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+        }
+        .splash-logo {
+          filter: none;
+          will-change: transform, opacity;
+        }
+        .splash-name {
+          -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+        }
       }
       /* hold the home-page entrance until the curtain starts lifting */
       html.splash-on:not(.intro-go) .nav,
