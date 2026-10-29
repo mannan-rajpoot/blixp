@@ -20,7 +20,13 @@
     <meta name="theme-color" content="#ffffff" />
 
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="apple-touch-icon" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Blixp" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <script src="/pwa.js"></script>
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Blixp" />
@@ -74,6 +80,14 @@
       href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&display=swap"
     />
 
+    <script>
+      (function () {
+        var d = document.documentElement;
+        d.classList.add("splash-lock");
+        if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+          d.classList.add("splash-on");
+      })();
+    </script>
     <style>
       :root {
         --ink: #000;
@@ -212,7 +226,7 @@
         backdrop-filter: saturate(1.4) blur(10px);
         border-bottom: 1px solid var(--line);
         transition: box-shadow 0.3s ease;
-        animation: nav-in 0.9s var(--ease) backwards;
+        animation: nav-in 1.1s cubic-bezier(0.16, 1, 0.3, 1) backwards;
       }
       .nav::after {
         content: "";
@@ -291,14 +305,14 @@
       }
       .hero-copy > * {
         --y: 34px;
-        animation: enter 1s var(--ease) backwards;
-        animation-delay: 150ms;
+        animation: enter 1.3s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+        animation-delay: 120ms;
       }
       .hero-copy > :nth-child(2) {
-        animation-delay: 260ms;
+        animation-delay: 240ms;
       }
       .hero-copy > :nth-child(3) {
-        animation-delay: 370ms;
+        animation-delay: 360ms;
       }
       .hero-copy > :nth-child(4) {
         animation-delay: 480ms;
@@ -352,7 +366,7 @@
         container-type: inline-size;
         background: linear-gradient(160deg, var(--a), var(--b));
         box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
-        animation: enter 1.1s var(--ease) backwards;
+        animation: enter 1.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
         animation-delay: var(--d);
         transition:
           transform 0.6s var(--ease),
@@ -365,7 +379,7 @@
         --ar: 9 / 16;
         --a: #d9ecff;
         --b: #8fc3ff;
-        --d: 320ms;
+        --d: 260ms;
       }
       .frame.post {
         --x: 0px;
@@ -374,7 +388,7 @@
         --ar: 4 / 5;
         --a: #ffe0b8;
         --b: #ff9d8f;
-        --d: 440ms;
+        --d: 380ms;
       }
       .frame.square {
         --x: 46px;
@@ -383,7 +397,7 @@
         --ar: 1 / 1;
         --a: #e2fbd0;
         --b: #8fdcab;
-        --d: 560ms;
+        --d: 500ms;
       }
       .frame:hover {
         transform: translateY(-8px);
@@ -1141,11 +1155,13 @@
       @keyframes enter {
         from {
           opacity: 0;
-          transform: translate3d(var(--x, 0), var(--y, 26px), 0) scale(0.97);
+          transform: translate3d(var(--x, 0), var(--y, 26px), 0) scale(0.96);
+          filter: blur(10px);
         }
         to {
           opacity: 1;
           transform: none;
+          filter: blur(0);
         }
       }
       @keyframes nav-in {
@@ -1750,9 +1766,167 @@
           font-size: 137.5%;
         }
       }
+
+      /* ---------- intro splash ---------- */
+      .splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #000;
+        color: #fff;
+        overflow: hidden;
+        padding: env(safe-area-inset-top) env(safe-area-inset-right)
+          env(safe-area-inset-bottom) env(safe-area-inset-left);
+        animation: splashOut 1.05s cubic-bezier(0.76, 0, 0.24, 1) 3.2s forwards;
+        will-change: transform;
+      }
+      .splash-brand {
+        display: flex;
+        align-items: baseline;
+        font-family: var(--font);
+        font-weight: 800;
+        font-size: clamp(44px, 12vw, 76px);
+        line-height: 1;
+        animation: brandOut 0.8s cubic-bezier(0.64, 0, 0.78, 0) 3.2s forwards;
+        will-change: transform, opacity;
+      }
+      .splash-logo {
+        /* sits on the text baseline, top meets the cap height */
+        height: 0.72em;
+        height: 1.03cap;
+        margin-bottom: -0.02em;
+        width: auto;
+        aspect-ratio: 214 / 284;
+        flex: none;
+        object-fit: contain;
+        opacity: 0;
+        transform: scale(0.55);
+        filter: blur(14px);
+        animation: splashLogo 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+        will-change: transform, opacity, filter;
+      }
+      /* grid 0fr -> 1fr fits the name exactly, so the logo glides
+         to its final position with no jump at the end */
+      .splash-name-clip {
+        display: grid;
+        grid-template-columns: 0fr;
+        animation: splashClip 1.15s cubic-bezier(0.65, 0, 0.15, 1) 1.45s
+          forwards;
+      }
+      .splash-mask {
+        min-width: 0;
+        overflow: hidden;
+        overflow: clip;
+        padding: 0.1em 0.04em 0.2em 0;
+      }
+      .splash-name {
+        display: block;
+        font-weight: 800;
+        font-size: 1em;
+        line-height: 1;
+        letter-spacing: -0.035em;
+        white-space: nowrap;
+        padding-left: 0.08em;
+        opacity: 0;
+        transform: translateX(-70%);
+        animation: splashName 1.15s cubic-bezier(0.65, 0, 0.15, 1) 1.45s
+          forwards;
+        will-change: transform, opacity;
+      }
+      @keyframes splashLogo {
+        to {
+          opacity: 1;
+          transform: none;
+          filter: blur(0);
+        }
+      }
+      @keyframes splashClip {
+        to {
+          grid-template-columns: 1fr;
+        }
+      }
+      @keyframes splashName {
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes brandOut {
+        to {
+          opacity: 0;
+          transform: translateY(-5vh) scale(0.97);
+        }
+      }
+      @keyframes splashOut {
+        0% {
+          transform: translateY(0);
+          visibility: visible;
+        }
+        99% {
+          visibility: visible;
+        }
+        100% {
+          transform: translateY(-100%);
+          visibility: hidden;
+        }
+      }
+      html.splash-lock,
+      html.splash-lock body {
+        overflow: hidden;
+      }
+      /* hold the home-page entrance until the curtain starts lifting */
+      html.splash-on:not(.intro-go) .nav,
+      html.splash-on:not(.intro-go) .hero,
+      html.splash-on:not(.intro-go) .hero *,
+      html.splash-on:not(.intro-go) .hero *::before,
+      html.splash-on:not(.intro-go) .hero *::after {
+        animation-play-state: paused !important;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .splash {
+          animation: splashFade 0.5s ease 1.2s forwards;
+        }
+        .splash-brand,
+        .splash-logo,
+        .splash-name-clip,
+        .splash-name {
+          animation: none;
+          opacity: 1;
+          transform: none;
+          filter: none;
+        }
+        .splash-name-clip {
+          grid-template-columns: 1fr;
+        }
+        @keyframes splashFade {
+          to {
+            opacity: 0;
+            visibility: hidden;
+          }
+        }
+      }
     </style>
   </head>
   <body>
+    <div class="splash" id="splash" aria-hidden="true">
+      <div class="splash-brand">
+        <img
+          class="splash-logo"
+          src="/splash-logo.png"
+          alt=""
+          width="214"
+          height="284"
+        />
+        <span class="splash-name-clip"
+          ><span class="splash-mask"
+            ><span class="splash-name">Blixp</span></span
+          ></span
+        >
+      </div>
+    </div>
     <a class="skip" href="#main">Skip to content</a>
 
     <header class="nav">
@@ -2164,6 +2338,34 @@
           });
           io2.observe(mark);
         }
+      })();
+    </script>
+
+    <script>
+      (function () {
+        var s = document.getElementById("splash");
+        var root = document.documentElement;
+        if (!s) {
+          root.classList.remove("splash-lock", "splash-on");
+          return;
+        }
+        var reduce = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+        /* page animations begin as the curtain lifts */
+        setTimeout(
+          function () {
+            root.classList.add("intro-go");
+          },
+          reduce ? 0 : 3550,
+        );
+        setTimeout(
+          function () {
+            root.classList.remove("splash-lock", "splash-on");
+            if (s.parentNode) s.parentNode.removeChild(s);
+          },
+          reduce ? 1800 : 4400,
+        );
       })();
     </script>
   </body>
