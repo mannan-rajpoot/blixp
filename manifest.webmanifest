@@ -1,9 +1,9 @@
 {
-  "id": "/editor",
+  "id": "/",
   "name": "Blixp",
   "short_name": "Blixp",
   "description": "Turn your app screen recordings into polished Reels, 4:5 posts and square videos.",
-  "start_url": "/editor?source=pwa",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
   "display_override": ["standalone"],

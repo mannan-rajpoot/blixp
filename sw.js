@@ -1,6 +1,6 @@
 /* Blixp service worker: installable app shell + offline fallback.
    Bump VERSION to force every device to refresh its cache. */
-const VERSION = "blixp-v2";
+const VERSION = "blixp-v3";
 const SHELL = VERSION + "-shell";
 const RUNTIME = VERSION + "-runtime";
 
