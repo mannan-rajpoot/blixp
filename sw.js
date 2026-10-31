@@ -1,6 +1,6 @@
 /* Blixp service worker: installable app shell + offline fallback.
    Bump VERSION to force every device to refresh its cache. */
-const VERSION = "blixp-v3";
+const VERSION = "blixp-v4";
 const SHELL = VERSION + "-shell";
 const RUNTIME = VERSION + "-runtime";
 
@@ -48,6 +48,12 @@ self.addEventListener("activate", (event) => {
 
 const FONT_HOSTS = ["fonts.googleapis.com", "fonts.gstatic.com"];
 
+// On launch, how long to wait for the network before showing the cached
+// shell instead. The network request keeps going and refreshes the cache,
+// so the next open is fresh. Without this a slow connection leaves the
+// launch screen up until the request finishes or fails.
+const NAV_TIMEOUT_MS = 2000;
+
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
@@ -56,32 +62,56 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(req.url);
   const sameOrigin = url.origin === self.location.origin;
 
-  // Pages: network first (always fresh), cached copy when offline
+  // Pages: network first (fresh), but fall back to the cached copy when
+  // offline or when the network is slower than NAV_TIMEOUT_MS
   if (req.mode === "navigate") {
+    const network = fetch(req).then((res) => {
+      if (res && res.ok) {
+        const copy = res.clone();
+        caches.open(SHELL).then((c) => c.put(req, copy));
+      }
+      return res;
+    });
+    // keep the request alive after a timeout so the cache still refreshes
+    event.waitUntil(network.catch(() => null));
+
+    const findCached = async () => {
+      const cached = await caches.match(req, { ignoreSearch: true });
+      if (cached) return cached;
+      const path = url.pathname.replace(/\/+$/, "");
+      return (
+        (await caches.match(path.startsWith("/editor") ? "/editor" : "/")) ||
+        (await caches.match("/")) ||
+        null
+      );
+    };
+
     event.respondWith(
-      fetch(req)
-        .then((res) => {
-          if (res && res.ok) {
-            const copy = res.clone();
-            caches.open(SHELL).then((c) => c.put(req, copy));
-          }
-          return res;
-        })
-        .catch(async () => {
-          const cached = await caches.match(req, { ignoreSearch: true });
-          if (cached) return cached;
-          const path = url.pathname.replace(/\/+$/, "");
+      (async () => {
+        let timer;
+        const timeout = new Promise((resolve) => {
+          timer = setTimeout(() => resolve("timeout"), NAV_TIMEOUT_MS);
+        });
+        try {
+          const first = await Promise.race([network, timeout]);
+          if (first !== "timeout") return first;
+          // slow network: use the cached shell if there is one, otherwise
+          // keep waiting for the network
+          const cachedShell = await findCached();
+          if (cachedShell) return cachedShell;
+          return await network;
+        } catch (err) {
           return (
-            (await caches.match(
-              path.startsWith("/editor") ? "/editor" : "/",
-            )) ||
-            (await caches.match("/")) ||
+            (await findCached()) ||
             new Response("You are offline.", {
               status: 503,
               headers: { "Content-Type": "text/plain" },
             })
           );
-        }),
+        } finally {
+          clearTimeout(timer);
+        }
+      })(),
     );
     return;
   }

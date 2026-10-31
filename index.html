@@ -6,6 +6,22 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
+    <!-- Paint black from the very first frame. Must stay above every
+         script / stylesheet so nothing can delay it. The class is removed
+         when the intro curtain has lifted, so the page itself is unchanged. -->
+    <style>
+      html.splash-lock {
+        background: #000;
+      }
+    </style>
+    <script>
+      (function () {
+        var d = document.documentElement;
+        d.classList.add("splash-lock");
+        if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+          d.classList.add("splash-on");
+      })();
+    </script>
     <title>Blixp — Create Professional App Showcase Videos</title>
     <meta
       name="description"
@@ -75,19 +91,21 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- non-blocking: a render-blocking cross-origin stylesheet keeps the
+         first paint (and therefore the black launch screen) waiting -->
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&display=swap"
+      media="print"
+      onload="this.media = 'all'"
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&display=swap"
+      />
+    </noscript>
 
-    <script>
-      (function () {
-        var d = document.documentElement;
-        d.classList.add("splash-lock");
-        if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches)
-          d.classList.add("splash-on");
-      })();
-    </script>
     <style>
       :root {
         --ink: #000;
@@ -2552,6 +2570,10 @@
         measure();
         if (document.fonts && document.fonts.ready)
           document.fonts.ready.then(function () {
+            if (!root.classList.contains("intro-go")) measure();
+          });
+        if (document.fonts && document.fonts.addEventListener)
+          document.fonts.addEventListener("loadingdone", function () {
             if (!root.classList.contains("intro-go")) measure();
           });
         /* page animations begin as the curtain lifts */
